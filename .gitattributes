@@ -1,2 +1,288 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizHub - Interactive Quizzes</title>
+    <style>
+        /* Global Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            z-index: 1000;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            background: #444;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .navbar li {
+            margin: 0 15px;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a.active,
+        .navbar a:hover {
+            color: #00bcd4;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .hero .btn {
+            padding: 10px 20px;
+            background-color: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .hero .btn:hover {
+            background-color: #0097a7;
+        }
+
+        /* Sections */
+        .section {
+            padding: 60px 20px;
+            text-align: center;
+            background-color: #f9f9f9;
+            height: 100vh;
+        }
+
+        .section:nth-child(even) {
+            background-color: #fff;
+        }
+
+        .section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        /* Quiz Section */
+        .quiz-container {
+            display: none;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .quiz-container .question {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .quiz-container .answers button {
+            display: block;
+            background: #007BFF;
+            color: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .quiz-container .answers button:hover {
+            background: #0056b3;
+        }
+
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar ul {
+                flex-direction: column;
+                display: none;
+            }
+
+            .navbar ul.show {
+                display: flex;
+            }
+
+            .navbar .menu-toggle {
+                display: block;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .navbar .menu-toggle {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">QuizHub</div>
+        <div class="menu-toggle">&#9776;</div>
+        <ul>
+            <li><a href="#home" class="active">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#quiz">Quiz</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <h1>Welcome to QuizHub</h1>
+        <p>Challenge your knowledge with interactive quizzes!</p>
+        <button class="btn" onclick="scrollToSection('quiz')">Start Quiz</button>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+        <h2>About Us</h2>
+        <p>QuizHub is a platform for interactive quizzes in Science, History, Sports, and more!</p>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <h2>Features</h2>
+        <p>- Multiple categories<br>- Real-time scoring<br>- Easy to use</p>
+    </section>
+
+    <!-- Quiz Section -->
+    <section class="section" id="quiz">
+        <h2>Interactive Quiz</h2>
+        <div class="quiz-container" id="quiz-container">
+            <select id="categories">
+                <option value="9">General Knowledge</option>
+                <option value="18">Science</option>
+                <option value="23">History</option>
+            </select>
+            <div class="question" id="question"></div>
+            <div class="answers" id="answers"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 QuizHub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Navbar Functionality
+        const navbarLinks = document.querySelectorAll(".navbar a");
+        window.addEventListener("scroll", () => {
+            let scrollPos = window.scrollY + 100; 
+            document.querySelectorAll("section").forEach(section => {
+                if (section.offsetTop <= scrollPos && section.offsetTop + section.offsetHeight > scrollPos) {
+                    navbarLinks.forEach(nav => nav.classList.remove("active"));
+                    document.querySelector(`.navbar a[href="#${section.id}"]`)?.classList.add("active");
+                }
+            });
+        });
+
+        // Quiz Functionality
+        const quizContainer = document.getElementById("quiz-container");
+        const questionElem = document.getElementById("question");
+        const answersElem = document.getElementById("answers");
+        const categoriesElem = document.getElementById("categories");
+
+        categoriesElem.addEventListener("change", fetchQuiz);
+
+        function fetchQuiz() {
+            fetch(`https://opentdb.com/api.php?amount=1&category=${categoriesElem.value}&type=multiple`)
+                .then(res => res.json())
+                .then(data => displayQuestion(data.results[0]));
+        }
+
+        function displayQuestion(data) {
+            questionElem.innerHTML = data.question;
+            answersElem.innerHTML = "";
+            const answers = [...data.incorrect_answers, data.correct_answer].sort(() => Math.random() - 0.5);
+            answers.forEach(ans => {
+                const btn = document.createElement("button");
+                btn.textContent = ans;
+                btn.onclick = () => alert(ans === data.correct_answer ? "Correct!" : `Wrong! Correct: ${data.correct_answer}`);
+                answersElem.appendChild(btn);
+            });
+            quizContainer.style.display = "block";
+        }
+
+        // Smooth Scroll
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+        }
+    </script>
+</body>
+</html>
+
