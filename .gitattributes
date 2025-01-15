@@ -102,7 +102,7 @@
             background-color: #0097a7;
         }
 
-        /* Sections */
+        /* Section Styling */
         .section {
             padding: 60px 20px;
             text-align: center;
@@ -187,6 +187,7 @@
     </style>
 </head>
 <body>
+
     <!-- Navbar -->
     <nav class="navbar">
         <div class="logo">QuizHub</div>
@@ -222,19 +223,19 @@
     <!-- Quiz Section -->
     <section class="section" id="quiz">
         <h2>Interactive Quiz</h2>
+        <select id="categories">
+            <option value="9">General Knowledge</option>
+            <option value="18">Science</option>
+            <option value="23">History</option>
+        </select>
         <div class="quiz-container" id="quiz-container">
-            <select id="categories">
-                <option value="9">General Knowledge</option>
-                <option value="18">Science</option>
-                <option value="23">History</option>
-            </select>
             <div class="question" id="question"></div>
             <div class="answers" id="answers"></div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer" id="contact">
         <p>&copy; 2025 QuizHub. All rights reserved.</p>
     </footer>
 
@@ -242,11 +243,15 @@
         // Navbar Functionality
         const navbarLinks = document.querySelectorAll(".navbar a");
         window.addEventListener("scroll", () => {
-            let scrollPos = window.scrollY + 100; 
-            document.querySelectorAll("section").forEach(section => {
-                if (section.offsetTop <= scrollPos && section.offsetTop + section.offsetHeight > scrollPos) {
+            let scrollPos = window.scrollY + 100;
+            navbarLinks.forEach(link => {
+                const section = document.querySelector(link.getAttribute("href"));
+                if (
+                    section.offsetTop <= scrollPos &&
+                    section.offsetTop + section.offsetHeight > scrollPos
+                ) {
                     navbarLinks.forEach(nav => nav.classList.remove("active"));
-                    document.querySelector(`.navbar a[href="#${section.id}"]`)?.classList.add("active");
+                    link.classList.add("active");
                 }
             });
         });
@@ -260,20 +265,25 @@
         categoriesElem.addEventListener("change", fetchQuiz);
 
         function fetchQuiz() {
-            fetch(`https://opentdb.com/api.php?amount=1&category=${categoriesElem.value}&type=multiple`)
+            const category = categoriesElem.value;
+            fetch(`https://opentdb.com/api.php?amount=1&category=${category}&type=multiple`)
                 .then(res => res.json())
-                .then(data => displayQuestion(data.results[0]));
+                .then(data => displayQuestion(data.results[0]))
+                .catch(err => console.error("Failed to fetch quiz", err));
         }
 
         function displayQuestion(data) {
             questionElem.innerHTML = data.question;
             answersElem.innerHTML = "";
             const answers = [...data.incorrect_answers, data.correct_answer].sort(() => Math.random() - 0.5);
-            answers.forEach(ans => {
-                const btn = document.createElement("button");
-                btn.textContent = ans;
-                btn.onclick = () => alert(ans === data.correct_answer ? "Correct!" : `Wrong! Correct: ${data.correct_answer}`);
-                answersElem.appendChild(btn);
+            answers.forEach(answer => {
+                const button = document.createElement("button");
+                button.textContent = answer;
+                button.addEventListener("click", () => {
+                    alert(answer === data.correct_answer ? "Correct!" : `Wrong! Correct: ${data.correct_answer}`);
+                    fetchQuiz();
+                });
+                answersElem.appendChild(button);
             });
             quizContainer.style.display = "block";
         }
@@ -282,7 +292,18 @@
         function scrollToSection(id) {
             document.getElementById(id).scrollIntoView({ behavior: "smooth" });
         }
-    </script>
+
+// Mobile Menu Toggle
+const menuToggle = document.querySelector(".menu-toggle");
+const navbarMenu = document.querySelector(".navbar ul");
+
+menuToggle.addEventListener("click", () => {
+    navbarMenu.classList.toggle("show");
+});
+
+// Fetch the first quiz on page load
+fetchQuiz();
+</script>
+
 </body>
 </html>
-
